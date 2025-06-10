@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>护手数据监控APP - 时钟</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F7F7F7;
+            color: #2D3436;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .phone-container {
+            width: 390px; /* iPhone 15 Pro 宽度 */
+            height: 844px; /* iPhone 15 Pro 高度 */
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #F7F7F7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .header {
+            padding: 16px;
+            background-color: white;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2D3436;
+        }
+        .content-container {
+            height: calc(100% - 44px - 80px - 60px); /* 减去状态栏、头部和底部导航的高度 */
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #2D3436;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .view-all {
+            font-size: 14px;
+            color: #543EA7;
+            font-weight: 500;
+        }
+        .clock-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 0 8px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2D3436;
+            display: flex;
+            align-items: center;
+        }
+        .card-title i {
+            margin-right: 8px;
+            color: #543EA7;
+        }
+        .card-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #543EA7;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .card-action:hover {
+            background-color: #4937A7;
+        }
+        /* 护手保护时间段列表样式 */
+        .time-period-list {
+            padding: 16px;
+        }
+        
+        .time-period-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .time-range {
+            flex: 1;
+        }
+        
+        .time-input {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .time-picker {
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            color: #333;
+            padding: 4px;
+            width: 85px;
+        }
+        
+        .time-separator {
+            margin: 0 8px;
+            color: #666;
+        }
+        
+        .period-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .period-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-button {
+            background: none;
+            border: none;
+            padding: 8px;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .action-button:hover {
+            color: #333;
+        }
+        
+        .edit-button:hover {
+            color: #2196f3;
+        }
+        
+        .delete-button:hover {
+            color: #f44336;
+        }
+        .current-time {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .time-display {
+            font-size: 64px;
+            font-weight: 300;
+            color: #2D3436;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+        .date-display {
+            font-size: 16px;
+            color: #858585;
+        }
+        .world-clock-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .world-clock-item:last-child {
+            border-bottom: none;
+        }
+        .clock-location {
+            display: flex;
+            flex-direction: column;
+        }
+        .location-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2D3436;
+            margin-bottom: 4px;
+        }
+        .location-info {
+            font-size: 12px;
+            color: #858585;
+        }
+        .clock-time {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2D3436;
+        }
+        .alarm-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .alarm-item:last-child {
+            border-bottom: none;
+        }
+        .alarm-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .alarm-time {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2D3436;
+            margin-bottom: 4px;
+        }
+        .alarm-label {
+            font-size: 14px;
+            color: #858585;
+            display: flex;
+            align-items: center;
+        }
+        .alarm-days {
+            display: flex;
+            margin-top: 4px;
+        }
+        .alarm-day {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #F0F0F0;
+            color: #858585;
+            font-size: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 4px;
+        }
+        .alarm-day.active {
+            background-color: #543EA7;
+            color: white;
+        }
+        .alarm-toggle {
+            position: relative;
+            width: 50px;
+            height: 30px;
+        }
+        .toggle-switch {
+            position: absolute;
+            width: 50px;
+            height: 30px;
+            background-color: #F0F0F0;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+        .toggle-switch.active {
+            background-color: #543EA7;
+        }
+        .toggle-switch::before {
+            content: "";
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .toggle-switch.active::before {
+            transform: translateX(20px);
+        }
+        .timer-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .timer-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 12px;
+        }
+        .timer-value {
+            font-size: 48px;
+            font-weight: 300;
+            color: #2D3436;
+        }
+        .timer-label {
+            font-size: 12px;
+            color: #858585;
+            margin-top: 4px;
+        }
+        .timer-separator {
+            font-size: 48px;
+            font-weight: 300;
+            color: #2D3436;
+            margin-top: -8px;
+        }
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .timer-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 12px;
+            font-size: 20px;
+        }
+        .start-button {
+            background-color: #543EA7;
+            color: white;
+        }
+        .reset-button {
+            background-color: #F0F0F0;
+            color: #2D3436;
+        }
+        .timer-presets {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .preset-button {
+            padding: 8px 16px;
+            background-color: #F0F0F0;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #2D3436;
+        }
+        .add-button {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            background-color: #543EA7;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(84, 62, 167, 0.3);
+            z-index: 10;
+        }
+        .bottom-nav {
+            height: 80px;
+            background-color: white;
+            border-top: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 16px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #858585;
+            position: relative;
+            z-index: 1;
+        }
+        .nav-item.center {
+            transform: translateY(-20px);
+            background-color: #543EA7;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(84, 62, 167, 0.3);
+            color: white;
+        }
+        .nav-item.center .nav-icon {
+            margin-bottom: 0;
+            margin-top: 8px;
+        }
+        .nav-item.center .nav-text {
+            color: white;
+            margin-top: 2px;
+        }
+        .nav-item.active {
+            color: #543EA7;
+        }
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .nav-text {
+            font-size: 12px;
+        }
+        .analog-clock {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: white;
+            position: relative;
+            margin: 0 auto 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .clock-face {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+        }
+        .clock-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #543EA7;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        .hour-hand {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 4px;
+            background-color: #2D3436;
+            transform: translate(-50%, -50%) rotate(45deg);
+            transform-origin: 0% 50%;
+            border-radius: 2px;
+        }
+        .minute-hand {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 3px;
+            background-color: #543EA7;
+            transform: translate(-50%, -50%) rotate(180deg);
+            transform-origin: 0% 50%;
+            border-radius: 1.5px;
+        }
+        .second-hand {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90px;
+            height: 1px;
+            background-color: #883DB4;
+            transform: translate(-50%, -50%) rotate(90deg);
+            transform-origin: 0% 50%;
+        }
+        .clock-marking {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .marking {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background-color: #858585;
+            left: 50%;
+            margin-left: -1px;
+            transform-origin: 1px 100px;
+        }
+        .marking.hour-marking {
+            height: 15px;
+            width: 3px;
+            background-color: #2D3436;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi ml-1"></i>
+                <i class="fas fa-battery-full ml-1"></i>
+            </div>
+        </div>
+        
+        <!-- 头部 -->
+        <div class="header">
+            <div class="page-title">时钟</div>
+            <div>
+                <i class="fas fa-ellipsis-v text-gray-400"></i>
+            </div>
+        </div>
+        
+        <!-- 护手保护时间段设置说明 -->
+        <div class="mx-4 mt-4 mb-2 text-sm text-gray-600">
+            <i class="fas fa-info-circle mr-1"></i>
+            设置合适的护手保护提醒时间段，帮助您更好地保护留置针
+        </div>
+        
+        <!-- 主要内容 -->
+        <div class="content-container">
+            <!-- 护手保护时间段设置 -->
+            <div class="clock-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-clock"></i>
+                        护手保护时间段
+                    </div>
+                    <div class="card-action">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                </div>
+                
+                <div class="time-period-list">
+                    <div class="time-period-item">
+                        <div class="time-range">
+                            <div class="time-input">
+                                <input type="time" value="07:00" class="time-picker">
+                                <span class="time-separator">至</span>
+                                <input type="time" value="09:00" class="time-picker">
+                            </div>
+                            <div class="period-label">早晨护理时间</div>
+                        </div>
+                        <div class="period-actions">
+                            <button class="action-button edit-button">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-button delete-button">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="time-period-item">
+                        <div class="time-range">
+                            <div class="time-input">
+                                <input type="time" value="12:00" class="time-picker">
+                                <span class="time-separator">至</span>
+                                <input type="time" value="14:00" class="time-picker">
+                            </div>
+                            <div class="period-label">午间护理时间</div>
+                        </div>
+                        <div class="period-actions">
+                            <button class="action-button edit-button">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-button delete-button">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="time-period-item">
+                        <div class="time-range">
+                            <div class="time-input">
+                                <input type="time" value="21:00" class="time-picker">
+                                <span class="time-separator">至</span>
+                                <input type="time" value="22:00" class="time-picker">
+                            </div>
+                            <div class="period-label">睡前护理时间</div>
+                        </div>
+                        <div class="period-actions">
+                            <button class="action-button edit-button">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-button delete-button">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 护手提醒 -->
+            <div class="clock-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-hand-holding-medical"></i>
+                        护手提醒
+                    </div>
+                    <div class="card-action">添加</div>
+                </div>
+                
+                <div class="alarm-item">
+                    <div class="alarm-info">
+                        <div class="alarm-time">07:30</div>
+                        <div class="alarm-label">早晨检查护手状态</div>
+                        <div class="alarm-days">
+                            <div class="alarm-day active">一</div>
+                            <div class="alarm-day active">二</div>
+                            <div class="alarm-day active">三</div>
+                            <div class="alarm-day active">四</div>
+                            <div class="alarm-day active">五</div>
+                            <div class="alarm-day active">六</div>
+                            <div class="alarm-day active">日</div>
+                        </div>
+                    </div>
+                    <div class="alarm-toggle">
+                        <div class="toggle-switch active"></div>
+                    </div>
+                </div>
+                
+                <div class="alarm-item">
+                    <div class="alarm-info">
+                        <div class="alarm-time">12:00</div>
+                        <div class="alarm-label">中午检查护手状态</div>
+                        <div class="alarm-days">
+                            <div class="alarm-day active">一</div>
+                            <div class="alarm-day active">二</div>
+                            <div class="alarm-day active">三</div>
+                            <div class="alarm-day active">四</div>
+                            <div class="alarm-day active">五</div>
+                            <div class="alarm-day">六</div>
+                            <div class="alarm-day">日</div>
+                        </div>
+                    </div>
+                    <div class="alarm-toggle">
+                        <div class="toggle-switch active"></div>
+                    </div>
+                </div>
+                
+                <div class="alarm-item">
+                    <div class="alarm-info">
+                        <div class="alarm-time">21:00</div>
+                        <div class="alarm-label">睡前检查护手状态</div>
+                        <div class="alarm-days">
+                            <div class="alarm-day active">一</div>
+                            <div class="alarm-day active">二</div>
+                            <div class="alarm-day active">三</div>
+                            <div class="alarm-day active">四</div>
+                            <div class="alarm-day active">五</div>
+                            <div class="alarm-day active">六</div>
+                            <div class="alarm-day active">日</div>
+                        </div>
+                    </div>
+                    <div class="alarm-toggle">
+                        <div class="toggle-switch active"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 护手计时器 -->
+            <div class="clock-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-hourglass-half"></i>
+                        护手计时器
+                    </div>
+                    <div class="card-action">历史</div>
+                </div>
+                
+                <div class="timer-display">
+                    <div class="timer-unit">
+                        <div class="timer-value">00</div>
+                        <div class="timer-label">时</div>
+                    </div>
+                    <div class="timer-separator">:</div>
+                    <div class="timer-unit">
+                        <div class="timer-value">30</div>
+                        <div class="timer-label">分</div>
+                    </div>
+                    <div class="timer-separator">:</div>
+                    <div class="timer-unit">
+                        <div class="timer-value">00</div>
+                        <div class="timer-label">秒</div>
+                    </div>
+                </div>
+                
+                <div class="timer-controls">
+                    <div class="timer-button reset-button">
+                        <i class="fas fa-redo"></i>
+                    </div>
+                    <div class="timer-button start-button">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                
+                <div class="timer-presets">
+                    <div class="preset-button">15分钟</div>
+                    <div class="preset-button">30分钟</div>
+                    <div class="preset-button">1小时</div>
+                    <div class="preset-button">2小时</div>
+                </div>
+                
+                <div class="text-sm text-gray-500 mt-2">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    计时器可用于记录护手装置佩戴时间
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加按钮 -->
+        <div class="add-button">
+            <i class="fas fa-plus"></i>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="nav-text">首页</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="nav-text">数据</div>
+            </div>
+            
+            <div class="nav-item center active">
+                <div class="nav-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="nav-text">提醒</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

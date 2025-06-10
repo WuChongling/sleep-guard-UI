@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>护手数据监控APP - 碰撞监测提醒</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F7F7F7;
+            color: #2D3436;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .phone-container {
+            width: 390px; /* iPhone 15 Pro 宽度 */
+            height: 844px; /* iPhone 15 Pro 高度 */
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #F7F7F7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .header {
+            padding: 16px;
+            background-color: white;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2D3436;
+        }
+        .content-container {
+            height: calc(100% - 44px - 80px - 60px); /* 减去状态栏、头部和底部导航的高度 */
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .alert-status {
+            background: #543EA7;
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .status-info {
+            flex: 1;
+        }
+        .status-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .status-title i {
+            margin-right: 6px;
+        }
+        .status-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .status-description {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #2D3436;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .view-all {
+            font-size: 14px;
+            color: #543EA7;
+            font-weight: 500;
+        }
+        .filter-tabs {
+            display: flex;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-right: 8px;
+            white-space: nowrap;
+            background-color: white;
+            color: #858585;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .filter-tab.active {
+            background-color: #543EA7;
+            color: white;
+        }
+        .alert-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #F0F0F0;
+        }
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .alert-type {
+            display: flex;
+            align-items: center;
+        }
+        .alert-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .high-alert {
+            background-color: rgba(255, 59, 48, 0.1);
+            color: #FF3B30;
+        }
+        .medium-alert {
+            background-color: rgba(255, 204, 0, 0.1);
+            color: #FFCC00;
+        }
+        .low-alert {
+            background-color: rgba(76, 217, 100, 0.1);
+            color: #4CD964;
+        }
+        .alert-info {
+            flex: 1;
+        }
+        .alert-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #2D3436;
+        }
+        .alert-time {
+            font-size: 12px;
+            color: #858585;
+        }
+        .alert-severity {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .high {
+            background-color: rgba(255, 59, 48, 0.1);
+            color: #FF3B30;
+        }
+        .medium {
+            background-color: rgba(255, 204, 0, 0.1);
+            color: #FFCC00;
+        }
+        .low {
+            background-color: rgba(76, 217, 100, 0.1);
+            color: #4CD964;
+        }
+        .alert-details {
+            font-size: 14px;
+            color: #2D3436;
+            margin-bottom: 12px;
+        }
+        .alert-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .action-button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .primary-action {
+            background-color: #543EA7;
+            color: white;
+        }
+        .secondary-action {
+            background-color: rgba(84, 62, 167, 0.1);
+            color: #543EA7;
+        }
+        .bottom-nav {
+            height: 80px;
+            background-color: white;
+            border-top: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 16px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #858585;
+            position: relative;
+            z-index: 1;
+        }
+        .nav-item.active {
+            color: #543EA7;
+        }
+        .nav-item.center {
+            transform: translateY(-20px);
+            background-color: #543EA7;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin: 0 10px;
+            box-shadow: 0 -4px 10px rgba(84, 62, 167, 0.2);
+            color: white;
+        }
+        .nav-item.center .nav-icon {
+            margin-bottom: 2px;
+        }
+        .nav-item.center .nav-text {
+            font-size: 10px;
+        }
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .nav-text {
+            font-size: 12px;
+        }
+        .device-status {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .connected {
+            background-color: #4CD964;
+        }
+        .disconnected {
+            background-color: #FF3B30;
+        }
+        .warning {
+            background-color: #FFCC00;
+        }
+        .alert-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #F0F0F0;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #858585;
+        }
+        .high-value {
+            color: #FF3B30;
+        }
+        .medium-value {
+            color: #FFCC00;
+        }
+        .low-value {
+            color: #4CD964;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi ml-1"></i>
+                <i class="fas fa-battery-full ml-1"></i>
+            </div>
+        </div>
+        
+        <!-- 头部 -->
+        <div class="header">
+            <div class="page-title">碰撞监测</div>
+            <div>
+                <i class="fas fa-bell text-gray-400 mr-4"></i>
+                <i class="fas fa-cog text-gray-400"></i>
+            </div>
+        </div>
+        
+        <!-- 主要内容 -->
+        <div class="content-container">
+            <!-- 当前状态 -->
+            <div class="alert-status">
+                <div class="status-info">
+                    <div class="status-title">
+                        <i class="fas fa-shield-alt"></i>
+                        当前状态
+                    </div>
+                    <div class="status-value">安全</div>
+                    <div class="status-description">护手装置工作正常，未检测到异常碰撞</div>
+                    
+                    <div class="device-status">
+                        <div class="status-indicator connected"></div>
+                        <span class="text-sm">实时监测中</span>
+                    </div>
+                </div>
+                
+                <div class="status-icon">
+                    <i class="fas fa-shield-check"></i>
+                </div>
+            </div>
+            
+            <!-- 统计数据 -->
+            <div class="section-title">
+                <span>本周统计</span>
+                <span class="view-all">查看详情</span>
+            </div>
+            
+            <div class="alert-stats">
+                <div class="stat-card">
+                    <div class="stat-value high-value">2</div>
+                    <div class="stat-label">高风险</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value medium-value">5</div>
+                    <div class="stat-label">中风险</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value low-value">12</div>
+                    <div class="stat-label">低风险</div>
+                </div>
+            </div>
+            
+            <!-- 筛选标签 -->
+            <div class="filter-tabs">
+                <div class="filter-tab active">全部</div>
+                <div class="filter-tab">高风险</div>
+                <div class="filter-tab">中风险</div>
+                <div class="filter-tab">低风险</div>
+                <div class="filter-tab">已处理</div>
+            </div>
+            
+            <!-- 碰撞记录列表 -->
+            <div class="section-title">
+                <span>碰撞记录</span>
+            </div>
+            
+            <!-- 高风险碰撞 -->
+            <div class="alert-card">
+                <div class="alert-header">
+                    <div class="alert-type">
+                        <div class="alert-icon high-alert">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="alert-info">
+                            <div class="alert-title">强烈碰撞检测</div>
+                            <div class="alert-time">今天 03:24</div>
+                        </div>
+                    </div>
+                    <div class="alert-severity high">高风险</div>
+                </div>
+                
+                <div class="alert-details">
+                    检测到留置针区域受到强烈碰撞，可能导致针头移位或脱落，请立即检查。
+                </div>
+                
+                <div class="alert-actions">
+                    <button class="action-button secondary-action">忽略</button>
+                    <button class="action-button primary-action">已处理</button>
+                </div>
+            </div>
+            
+            <!-- 中风险碰撞 -->
+            <div class="alert-card">
+                <div class="alert-header">
+                    <div class="alert-type">
+                        <div class="alert-icon medium-alert">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="alert-info">
+                            <div class="alert-title">中度碰撞检测</div>
+                            <div class="alert-time">昨天 22:15</div>
+                        </div>
+                    </div>
+                    <div class="alert-severity medium">中风险</div>
+                </div>
+                
+                <div class="alert-details">
+                    检测到留置针区域受到中度碰撞，请注意观察针头是否稳固。
+                </div>
+                
+                <div class="alert-actions">
+                    <button class="action-button secondary-action">忽略</button>
+                    <button class="action-button primary-action">已处理</button>
+                </div>
+            </div>
+            
+            <!-- 低风险碰撞 -->
+            <div class="alert-card">
+                <div class="alert-header">
+                    <div class="alert-type">
+                        <div class="alert-icon low-alert">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="alert-info">
+                            <div class="alert-title">轻微碰撞检测</div>
+                            <div class="alert-time">昨天 18:42</div>
+                        </div>
+                    </div>
+                    <div class="alert-severity low">低风险</div>
+                </div>
+                
+                <div class="alert-details">
+                    检测到留置针区域受到轻微碰撞，暂无安全隐患，建议定期检查。
+                </div>
+                
+                <div class="alert-actions">
+                    <button class="action-button secondary-action">忽略</button>
+                    <button class="action-button primary-action">已处理</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="nav-text">首页</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="nav-text">数据</div>
+            </div>
+            
+            <div class="nav-item center active">
+                <div class="nav-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="nav-text">提醒</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="nav-text">我的</div>
+            </div>
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="nav-text">提醒</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

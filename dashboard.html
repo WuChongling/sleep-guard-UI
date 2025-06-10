@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>护手数据监控APP - 仪表盘</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F7F7F7;
+            color: #2D3436;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .phone-container {
+            width: 390px; /* iPhone 15 Pro 宽度 */
+            height: 844px; /* iPhone 15 Pro 高度 */
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #F7F7F7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .header {
+            padding: 16px;
+            background-color: white;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2D3436;
+        }
+        .content-container {
+            height: calc(100% - 44px - 80px - 60px); /* 减去状态栏、头部和底部导航的高度 */
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #2D3436;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .view-all {
+            font-size: 14px;
+            color: #543EA7;
+            font-weight: 500;
+        }
+        .dashboard-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2D3436;
+            display: flex;
+            align-items: center;
+        }
+        .card-title i {
+            margin-right: 8px;
+            color: #543EA7;
+        }
+        .card-action {
+            font-size: 14px;
+            color: #543EA7;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 16px;
+            border: 2px solid #543EA7;
+        }
+        .user-details {
+            flex: 1;
+        }
+        .user-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2D3436;
+            margin-bottom: 4px;
+        }
+        .user-meta {
+            font-size: 14px;
+            color: #858585;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .user-meta-item {
+            margin-right: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .user-meta-item i {
+            margin-right: 4px;
+            font-size: 12px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stat-item {
+            background-color: #F7F7F7;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #543EA7;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #858585;
+        }
+        .chart-container {
+            height: 200px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            background-color: #F7F7F7;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #858585;
+            font-size: 14px;
+        }
+        /* 模拟图表 */
+        .sleep-chart {
+            width: 100%;
+            height: 100%;
+            background-color: #F7F7F7;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .chart-bars {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 70%;
+            padding: 0 10px;
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+        }
+        .chart-bar {
+            width: 8px;
+            background: linear-gradient(to top, #543EA7, #883DB4);
+            border-radius: 4px;
+        }
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            font-size: 10px;
+            color: #858585;
+        }
+        .device-card {
+            display: flex;
+            align-items: center;
+            background-color: #F7F7F7;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .device-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 16px;
+            color: #543EA7;
+            font-size: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .device-info {
+            flex: 1;
+        }
+        .device-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2D3436;
+            margin-bottom: 4px;
+        }
+        .device-status {
+            font-size: 12px;
+            color: #858585;
+            display: flex;
+            align-items: center;
+        }
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .connected {
+            background-color: #4CD964;
+        }
+        .disconnected {
+            background-color: #FF3B30;
+        }
+        .warning {
+            background-color: #FFCC00;
+        }
+        .device-battery {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2D3436;
+        }
+        .bottom-nav {
+            height: 80px;
+            background-color: white;
+            border-top: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 16px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #858585;
+            position: relative;
+            z-index: 1;
+        }
+        .nav-item.active {
+            color: #543EA7;
+        }
+        .nav-item.center {
+            transform: translateY(-20px);
+            background-color: #543EA7;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin: 0 10px;
+            box-shadow: 0 -4px 10px rgba(84, 62, 167, 0.2);
+            color: white;
+        }
+        .nav-item.center .nav-icon {
+            margin-bottom: 2px;
+        }
+        .nav-item.center .nav-text {
+            font-size: 10px;
+        }
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .nav-text {
+            font-size: 12px;
+        }
+        .sleep-quality {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .quality-item {
+            text-align: center;
+            flex: 1;
+        }
+        .quality-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #543EA7;
+            margin-bottom: 4px;
+        }
+        .quality-label {
+            font-size: 12px;
+            color: #858585;
+        }
+        .sleep-stages {
+            display: flex;
+            height: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .stage-deep {
+            background-color: #543EA7;
+            flex: 3;
+        }
+        .stage-light {
+            background-color: #883DB4;
+            flex: 4;
+        }
+        .stage-rem {
+            background-color: #26237A;
+            flex: 2;
+        }
+        .stage-awake {
+            background-color: #F0F0F0;
+            flex: 1;
+        }
+        .stage-legend {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #858585;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+        .legend-color {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi ml-1"></i>
+                <i class="fas fa-battery-full ml-1"></i>
+            </div>
+        </div>
+        
+        <!-- 头部 -->
+        <div class="header">
+            <div class="page-title">仪表盘</div>
+            <div>
+                <i class="fas fa-bell text-gray-400 mr-4"></i>
+                <i class="fas fa-cog text-gray-400"></i>
+            </div>
+        </div>
+        
+        <!-- 主要内容 -->
+        <div class="content-container">
+            <!-- 用户基础信息 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-user-circle"></i>
+                        用户信息
+                    </div>
+                    <div class="card-action">
+                        <i class="fas fa-pen"></i>
+                    </div>
+                </div>
+                
+                <div class="user-info">
+                    <img src="https://randomuser.me/api/portraits/boys/12.jpg" alt="用户头像" class="user-avatar">
+                    <div class="user-details">
+                        <div class="user-name">王小明</div>
+                        <div class="user-meta">
+                            <div class="user-meta-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                8岁
+                            </div>
+                            <div class="user-meta-item">
+                                <i class="fas fa-ruler-vertical"></i>
+                                128cm
+                            </div>
+                            <div class="user-meta-item">
+                                <i class="fas fa-weight"></i>
+                                26kg
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">98%</div>
+                        <div class="stat-label">护手稳定性</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">86分</div>
+                        <div class="stat-label">睡眠质量</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 睡眠状况 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-moon"></i>
+                        睡眠状况
+                    </div>
+                    <div class="card-action">查看详情</div>
+                </div>
+                
+                <div class="sleep-quality">
+                    <div class="quality-item">
+                        <div class="quality-value">8h 12m</div>
+                        <div class="quality-label">总时长</div>
+                    </div>
+                    <div class="quality-item">
+                        <div class="quality-value">92%</div>
+                        <div class="quality-label">效率</div>
+                    </div>
+                    <div class="quality-item">
+                        <div class="quality-value">6次</div>
+                        <div class="quality-label">醒来</div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="text-sm font-medium mb-2">睡眠阶段</div>
+                    <div class="sleep-stages">
+                        <div class="stage-deep"></div>
+                        <div class="stage-light"></div>
+                        <div class="stage-rem"></div>
+                        <div class="stage-awake"></div>
+                    </div>
+                    <div class="stage-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #543EA7;"></div>
+                            <span>深睡</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #883DB4;"></div>
+                            <span>浅睡</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #26237A;"></div>
+                            <span>REM</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #F0F0F0;"></div>
+                            <span>清醒</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="sleep-chart">
+                        <div class="chart-bars">
+                            <div class="chart-bar" style="height: 60%;"></div>
+                            <div class="chart-bar" style="height: 80%;"></div>
+                            <div class="chart-bar" style="height: 70%;"></div>
+                            <div class="chart-bar" style="height: 90%;"></div>
+                            <div class="chart-bar" style="height: 75%;"></div>
+                            <div class="chart-bar" style="height: 85%;"></div>
+                            <div class="chart-bar" style="height: 65%;"></div>
+                        </div>
+                        <div class="chart-labels">
+                            <div>周一</div>
+                            <div>周二</div>
+                            <div>周三</div>
+                            <div>周四</div>
+                            <div>周五</div>
+                            <div>周六</div>
+                            <div>周日</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 护手面板连接 -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-hand-holding-medical"></i>
+                        护手设备
+                    </div>
+                    <div class="card-action">管理</div>
+                </div>
+                
+                <div class="device-card">
+                    <div class="device-icon">
+                        <i class="fas fa-hand-holding-medical"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">护手监测器 #1</div>
+                        <div class="device-status">
+                            <div class="status-indicator connected"></div>
+                            <span>已连接</span>
+                        </div>
+                    </div>
+                    <div class="device-battery">
+                        <i class="fas fa-battery-three-quarters text-green-500"></i>
+                        78%
+                    </div>
+                </div>
+                
+                <div class="device-card">
+                    <div class="device-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">心率监测器</div>
+                        <div class="device-status">
+                            <div class="status-indicator connected"></div>
+                            <span>已连接</span>
+                        </div>
+                    </div>
+                    <div class="device-battery">
+                        <i class="fas fa-battery-half text-yellow-500"></i>
+                        52%
+                    </div>
+                </div>
+                
+                <div class="device-card">
+                    <div class="device-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">体温监测器</div>
+                        <div class="device-status">
+                            <div class="status-indicator disconnected"></div>
+                            <span>未连接</span>
+                        </div>
+                    </div>
+                    <div class="device-battery">
+                        <i class="fas fa-battery-empty text-red-500"></i>
+                        5%
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="nav-text">首页</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="nav-text">提醒</div>
+            </div>
+            
+            <div class="nav-item center active">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="nav-text">数据</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

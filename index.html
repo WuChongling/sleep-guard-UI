@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>护手数据监控APP - 原型设计</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F0F0F0;
+            color: #2D3436;
+            padding: 2rem;
+        }
+        .prototype-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+        .frame-container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .frame-title {
+            padding: 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .frame-content {
+            flex: 1;
+            overflow: hidden;
+        }
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: none;
+        }
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .nav-link {
+            padding: 0.5rem 1rem;
+            background-color: #543EA7;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            background-color: #883DB4;
+            transform: translateY(-2px);
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #26237A;
+        }
+        .description {
+            max-width: 800px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>护手数据监控APP - 原型设计</h1>
+    
+    <div class="description">
+        <p>这是一个用于监控睡眠时段中佩戴留置针保护装置的留置手状况以及儿童用户睡眠状况的APP原型设计。</p>
+        <p>主要功能包括：碰撞监测提醒、睡眠状况监控、用户基础信息管理、护手面板连接等。</p>
+    </div>
+    
+    <div class="nav-links">
+        <a href="splash.html" class="nav-link" target="_blank">启动页</a>
+        <a href="home.html" class="nav-link" target="_blank">主页</a>
+        <a href="collision-alert.html" class="nav-link" target="_blank">碰撞监测提醒</a>
+        <a href="dashboard.html" class="nav-link" target="_blank">仪表盘</a>
+        <a href="sleep-monitor.html" class="nav-link" target="_blank">睡眠状况</a>
+        <a href="clock.html" class="nav-link" target="_blank">时钟</a>
+        <a href="device-connection.html" class="nav-link" target="_blank">护手面板连接</a>
+        <a href="profile.html" class="nav-link" target="_blank">用户信息</a>
+        <a href="settings.html" class="nav-link" target="_blank">设置</a>
+    </div>
+    
+    <div class="prototype-container">
+        <!-- 启动页 -->
+        <div class="frame-container">
+            <div class="frame-title">
+                <span>启动页</span>
+                <a href="splash.html" target="_blank" class="text-blue-500"><i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="frame-content">
+                <iframe src="splash.html" title="启动页"></iframe>
+            </div>
+        </div>
+        
+        <!-- 主页 -->
+        <div class="frame-container">
+            <div class="frame-title">
+                <span>主页</span>
+                <a href="home.html" target="_blank" class="text-blue-500"><i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="frame-content">
+                <iframe src="home.html" title="主页"></iframe>
+            </div>
+        </div>
+        
+        <!-- 碰撞监测提醒 -->
+        <div class="frame-container">
+            <div class="frame-title">
+                <span>碰撞监测提醒</span>
+                <a href="collision-alert.html" target="_blank" class="text-blue-500"><i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="frame-content">
+                <iframe src="collision-alert.html" title="碰撞监测提醒"></iframe>
+            </div>
+        </div>
+        
+        <!-- 仪表盘 -->
+        <div class="frame-container">
+            <div class="frame-title">
+                <span>仪表盘</span>
+                <a href="dashboard.html" target="_blank" class="text-blue-500"><i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="frame-content">
+                <iframe src="dashboard.html" title="仪表盘"></iframe>
+            </div>
+        </div>
+        
+        <!-- 睡眠状况 -->
+        <div class="frame-container">
+            <div class="frame-title">
+                <span>睡眠状况</span>
+                <a href="sleep-monitor.html" target="_blank" class="text-blue-500"><i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="frame-content">
+                <iframe src="sleep-monitor.html" title="睡眠状况"></iframe>
+            </div>
+        </div>
+        
+        <!-- 时钟 -->
+        <div class="frame-container">
+            <div class="frame-title">
+                <span>时钟</span>
+                <a href="clock.html" target="_blank" class="text-blue-500"><i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="frame-content">
+                <iframe src="clock.html" title="时钟"></iframe>
+            </div>
+        </div>
+        
+        <!-- 护手面板连接 -->
+        <div class="frame-container">
+            <div class="frame-title">
+                <span>护手面板连接</span>
+                <a href="device-connection.html" target="_blank" class="text-blue-500"><i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="frame-content">
+                <iframe src="device-connection.html" title="护手面板连接"></iframe>
+            </div>
+        </div>
+        
+        <!-- 用户信息 -->
+        <div class="frame-container">
+            <div class="frame-title">
+                <span>用户信息</span>
+                <a href="profile.html" target="_blank" class="text-blue-500"><i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="frame-content">
+                <iframe src="profile.html" title="用户信息"></iframe>
+            </div>
+        </div>
+        
+        <!-- 设置 -->
+        <div class="frame-container">
+            <div class="frame-title">
+                <span>设置</span>
+                <a href="settings.html" target="_blank" class="text-blue-500"><i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="frame-content">
+                <iframe src="settings.html" title="设置"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

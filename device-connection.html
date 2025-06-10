@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>护手数据监控APP - 护手面板连接</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F7F7F7;
+            color: #2D3436;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .phone-container {
+            width: 390px; /* iPhone 15 Pro 宽度 */
+            height: 844px; /* iPhone 15 Pro 高度 */
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #F7F7F7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .header {
+            padding: 16px;
+            background-color: white;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2D3436;
+        }
+        .content-container {
+            height: calc(100% - 44px - 80px - 60px); /* 减去状态栏、头部和底部导航的高度 */
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #2D3436;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .view-all {
+            font-size: 14px;
+            color: #543EA7;
+            font-weight: 500;
+        }
+        .device-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2D3436;
+            display: flex;
+            align-items: center;
+        }
+        .card-title i {
+            margin-right: 8px;
+            color: #543EA7;
+        }
+        .card-action {
+            font-size: 14px;
+            color: #543EA7;
+        }
+        .device-status-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 0;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .status-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: rgba(84, 62, 167, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .status-icon {
+            font-size: 40px;
+            color: #543EA7;
+        }
+        .status-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2D3436;
+            margin-bottom: 8px;
+        }
+        .status-description {
+            font-size: 14px;
+            color: #858585;
+            text-align: center;
+            max-width: 240px;
+        }
+        .connection-strength {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .strength-item {
+            text-align: center;
+            flex: 1;
+        }
+        .strength-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #543EA7;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .strength-value i {
+            margin-right: 4px;
+        }
+        .strength-label {
+            font-size: 12px;
+            color: #858585;
+        }
+        .device-list-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background-color: #F7F7F7;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        .device-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 16px;
+            color: #543EA7;
+            font-size: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .device-info {
+            flex: 1;
+        }
+        .device-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2D3436;
+            margin-bottom: 4px;
+        }
+        .device-meta {
+            font-size: 12px;
+            color: #858585;
+            display: flex;
+            align-items: center;
+        }
+        .device-meta i {
+            margin-right: 4px;
+            font-size: 10px;
+        }
+        .device-actions {
+            display: flex;
+            align-items: center;
+        }
+        .device-battery {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2D3436;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .device-battery i {
+            margin-right: 4px;
+        }
+        .device-toggle {
+            position: relative;
+            width: 50px;
+            height: 30px;
+        }
+        .toggle-switch {
+            position: absolute;
+            width: 50px;
+            height: 30px;
+            background-color: #F0F0F0;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+        .toggle-switch.active {
+            background-color: #543EA7;
+        }
+        .toggle-switch::before {
+            content: "";
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .toggle-switch.active::before {
+            transform: translateX(20px);
+        }
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .connected {
+            background-color: #4CD964;
+        }
+        .disconnected {
+            background-color: #FF3B30;
+        }
+        .warning {
+            background-color: #FFCC00;
+        }
+        .signal-strength {
+            display: flex;
+            align-items: flex-end;
+            height: 16px;
+        }
+        .signal-bar {
+            width: 4px;
+            background-color: #F0F0F0;
+            margin-right: 2px;
+            border-radius: 1px;
+        }
+        .signal-bar.active {
+            background-color: #4CD964;
+        }
+        .signal-bar:nth-child(1) {
+            height: 4px;
+        }
+        .signal-bar:nth-child(2) {
+            height: 8px;
+        }
+        .signal-bar:nth-child(3) {
+            height: 12px;
+        }
+        .signal-bar:nth-child(4) {
+            height: 16px;
+        }
+        .battery-indicator {
+            width: 100%;
+            height: 6px;
+            background-color: #F0F0F0;
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .battery-level {
+            height: 100%;
+            border-radius: 3px;
+        }
+        .battery-high {
+            background-color: #4CD964;
+            width: 78%;
+        }
+        .battery-medium {
+            background-color: #FFCC00;
+            width: 52%;
+        }
+        .battery-low {
+            background-color: #FF3B30;
+            width: 15%;
+        }
+        .connection-history {
+            margin-top: 16px;
+        }
+        .history-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-time {
+            width: 80px;
+            font-size: 14px;
+            color: #858585;
+        }
+        .history-event {
+            flex: 1;
+            font-size: 14px;
+            color: #2D3436;
+        }
+        .add-device-button {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            background-color: #543EA7;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(84, 62, 167, 0.3);
+            z-index: 10;
+        }
+        .bottom-nav {
+            height: 80px;
+            background-color: white;
+            border-top: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 16px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #858585;
+        }
+        .nav-item.active {
+            color: #543EA7;
+        }
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .nav-text {
+            font-size: 12px;
+        }
+        .action-button {
+            background-color: #543EA7;
+            color: white;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 16px;
+        }
+        .action-button i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi ml-1"></i>
+                <i class="fas fa-battery-full ml-1"></i>
+            </div>
+        </div>
+        
+        <!-- 头部 -->
+        <div class="header">
+            <div class="page-title">护手设备</div>
+            <div>
+                <i class="fas fa-ellipsis-v text-gray-400"></i>
+            </div>
+        </div>
+        
+        <!-- 主要内容 -->
+        <div class="content-container">
+            <!-- 设备状态 -->
+            <div class="device-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-hand-holding-medical"></i>
+                        设备状态
+                    </div>
+                    <div class="card-action">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                </div>
+                
+                <div class="device-status-card">
+                    <div class="status-circle">
+                        <i class="fas fa-check-circle status-icon"></i>
+                    </div>
+                    <div class="status-text">所有设备正常工作中</div>
+                    <div class="status-description">3个设备已连接，护手监测器工作正常</div>
+                </div>
+                
+                <div class="connection-strength">
+                    <div class="strength-item">
+                        <div class="strength-value">
+                            <i class="fas fa-signal"></i>
+                            强
+                        </div>
+                        <div class="strength-label">信号强度</div>
+                    </div>
+                    <div class="strength-item">
+                        <div class="strength-value">
+                            <i class="fas fa-battery-three-quarters"></i>
+                            78%
+                        </div>
+                        <div class="strength-label">电池电量</div>
+                    </div>
+                    <div class="strength-item">
+                        <div class="strength-value">
+                            <i class="fas fa-clock"></i>
+                            12h
+                        </div>
+                        <div class="strength-label">剩余时间</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 已连接设备 -->
+            <div class="device-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-link"></i>
+                        已连接设备
+                    </div>
+                    <div class="card-action">管理</div>
+                </div>
+                
+                <div class="device-list-item">
+                    <div class="device-icon">
+                        <i class="fas fa-hand-holding-medical"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">护手监测器 #1</div>
+                        <div class="device-meta">
+                            <div class="status-indicator connected"></div>
+                            <span>已连接</span>
+                            <span class="ml-2">·</span>
+                            <span class="ml-2">上次同步: 2分钟前</span>
+                        </div>
+                        <div class="battery-indicator">
+                            <div class="battery-level battery-high"></div>
+                        </div>
+                    </div>
+                    <div class="device-actions">
+                        <div class="device-toggle">
+                            <div class="toggle-switch active"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="device-list-item">
+                    <div class="device-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">心率监测器</div>
+                        <div class="device-meta">
+                            <div class="status-indicator connected"></div>
+                            <span>已连接</span>
+                            <span class="ml-2">·</span>
+                            <span class="ml-2">上次同步: 5分钟前</span>
+                        </div>
+                        <div class="battery-indicator">
+                            <div class="battery-level battery-medium"></div>
+                        </div>
+                    </div>
+                    <div class="device-actions">
+                        <div class="device-toggle">
+                            <div class="toggle-switch active"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="device-list-item">
+                    <div class="device-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="device-info">
+                        <div class="device-name">体温监测器</div>
+                        <div class="device-meta">
+                            <div class="status-indicator warning"></div>
+                            <span>电量低</span>
+                            <span class="ml-2">·</span>
+                            <span class="ml-2">上次同步: 15分钟前</span>
+                        </div>
+                        <div class="battery-indicator">
+                            <div class="battery-level battery-low"></div>
+                        </div>
+                    </div>
+                    <div class="device-actions">
+                        <div class="device-toggle">
+                            <div class="toggle-switch active"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 设备详情 -->
+            <div class="device-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-info-circle"></i>
+                        护手监测器详情
+                    </div>
+                    <div class="card-action">设置</div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="text-sm font-medium mb-2">信号强度</div>
+                    <div class="signal-strength">
+                        <div class="signal-bar active"></div>
+                        <div class="signal-bar active"></div>
+                        <div class="signal-bar active"></div>
+                        <div class="signal-bar active"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="text-sm font-medium mb-2">设备信息</div>
+                    <div class="text-sm text-gray-500 mb-1">设备型号: HG-2023-Pro</div>
+                    <div class="text-sm text-gray-500 mb-1">固件版本: v2.3.5</div>
+                    <div class="text-sm text-gray-500 mb-1">MAC地址: 00:1B:44:11:3A:B7</div>
+                    <div class="text-sm text-gray-500">激活日期: 2023-05-10</div>
+                </div>
+                
+                <div class="connection-history">
+                    <div class="text-sm font-medium mb-2">连接历史</div>
+                    
+                    <div class="history-item">
+                        <div class="history-time">09:30</div>
+                        <div class="history-event">设备连接成功</div>
+                    </div>
+                    
+                    <div class="history-item">
+                        <div class="history-time">08:15</div>
+                        <div class="history-event">设备断开连接</div>
+                    </div>
+                    
+                    <div class="history-item">
+                        <div class="history-time">昨天</div>
+                        <div class="history-event">电池电量低警告</div>
+                    </div>
+                    
+                    <div class="history-item">
+                        <div class="history-time">昨天</div>
+                        <div class="history-event">固件更新完成</div>
+                    </div>
+                </div>
+                
+                <div class="action-button">
+                    <i class="fas fa-sync-alt"></i>
+                    检查固件更新
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加设备按钮 -->
+        <div class="add-device-button">
+            <i class="fas fa-plus"></i>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="nav-text">首页</div>
+            </div>
+            
+            <div class="nav-item active">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="nav-text">数据</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="nav-text">提醒</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

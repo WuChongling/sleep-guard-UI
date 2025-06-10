@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>护手数据监控APP - 用户信息</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #F7F7F7;
+            color: #2D3436;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .phone-container {
+            width: 390px; /* iPhone 15 Pro 宽度 */
+            height: 844px; /* iPhone 15 Pro 高度 */
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #F7F7F7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .header {
+            padding: 16px;
+            background-color: white;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2D3436;
+        }
+        .content-container {
+            height: calc(100% - 44px - 80px - 60px); /* 减去状态栏、头部和底部导航的高度 */
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .profile-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2D3436;
+            display: flex;
+            align-items: center;
+        }
+        .card-title i {
+            margin-right: 8px;
+            color: #543EA7;
+        }
+        .card-action {
+            font-size: 14px;
+            color: #543EA7;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #543EA7;
+        }
+        .user-info {
+            flex: 1;
+        }
+        .user-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2D3436;
+            margin-bottom: 4px;
+        }
+        .user-id {
+            font-size: 14px;
+            color: #858585;
+            margin-bottom: 8px;
+        }
+        .user-stats {
+            display: flex;
+        }
+        .user-stat {
+            margin-right: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .user-stat i {
+            margin-right: 4px;
+            color: #543EA7;
+            font-size: 14px;
+        }
+        .user-stat-text {
+            font-size: 14px;
+            color: #2D3436;
+        }
+        .profile-section {
+            margin-bottom: 16px;
+        }
+        .section-header {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2D3436;
+            margin-bottom: 12px;
+        }
+        .profile-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .profile-item:last-child {
+            border-bottom: none;
+        }
+        .item-label {
+            font-size: 14px;
+            color: #2D3436;
+            display: flex;
+            align-items: center;
+        }
+        .item-label i {
+            margin-right: 12px;
+            color: #543EA7;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        .item-value {
+            font-size: 14px;
+            color: #858585;
+            display: flex;
+            align-items: center;
+        }
+        .item-value i {
+            margin-left: 8px;
+            color: #858585;
+            font-size: 12px;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 30px;
+            background-color: #F0F0F0;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+        .toggle-switch.active {
+            background-color: #543EA7;
+        }
+        .toggle-switch::before {
+            content: "";
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .toggle-switch.active::before {
+            transform: translateX(20px);
+        }
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .achievement-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            background-color: #F7F7F7;
+            border-radius: 12px;
+        }
+        .achievement-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            background-color: rgba(84, 62, 167, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #543EA7;
+            font-size: 20px;
+        }
+        .achievement-name {
+            font-size: 12px;
+            color: #2D3436;
+            text-align: center;
+            font-weight: 600;
+        }
+        .achievement-date {
+            font-size: 10px;
+            color: #858585;
+            text-align: center;
+            margin-top: 4px;
+        }
+        .logout-button {
+            background-color: #F7F7F7;
+            color: #FF3B30;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 16px;
+        }
+        .logout-button i {
+            margin-right: 8px;
+        }
+        .bottom-nav {
+            height: 80px;
+            background-color: white;
+            border-top: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 16px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #858585;
+        }
+        .nav-item.active {
+            color: #543EA7;
+        }
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .nav-text {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div>9:41</div>
+            <div>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi ml-1"></i>
+                <i class="fas fa-battery-full ml-1"></i>
+            </div>
+        </div>
+        
+        <!-- 头部 -->
+        <div class="header">
+            <div class="page-title">个人中心</div>
+            <div>
+                <i class="fas fa-qrcode text-gray-400 mr-4"></i>
+                <i class="fas fa-cog text-gray-400"></i>
+            </div>
+        </div>
+        
+        <!-- 主要内容 -->
+        <div class="content-container">
+            <!-- 用户资料 -->
+            <div class="profile-card">
+                <div class="user-profile">
+                    <img src="https://randomuser.me/api/portraits/boys/12.jpg" alt="用户头像" class="user-avatar">
+                    <div class="user-info">
+                        <div class="user-name">王小明</div>
+                        <div class="user-id">ID: 1234567890</div>
+                        <div class="user-stats">
+                            <div class="user-stat">
+                                <i class="fas fa-calendar-check"></i>
+                                <div class="user-stat-text">已使用 45 天</div>
+                            </div>
+                            <div class="user-stat">
+                                <i class="fas fa-star"></i>
+                                <div class="user-stat-text">VIP 会员</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-user"></i>
+                            姓名
+                        </div>
+                        <div class="item-value">
+                            王小明
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-calendar-alt"></i>
+                            年龄
+                        </div>
+                        <div class="item-value">
+                            8岁
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-ruler-vertical"></i>
+                            身高
+                        </div>
+                        <div class="item-value">
+                            128cm
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-weight"></i>
+                            体重
+                        </div>
+                        <div class="item-value">
+                            26kg
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-phone"></i>
+                            联系电话
+                        </div>
+                        <div class="item-value">
+                            138****1234
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 护手成就 -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-trophy"></i>
+                        护手成就
+                    </div>
+                    <div class="card-action">全部</div>
+                </div>
+                
+                <div class="achievement-grid">
+                    <div class="achievement-item">
+                        <div class="achievement-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="achievement-name">连续使用7天</div>
+                        <div class="achievement-date">2023-06-01</div>
+                    </div>
+                    
+                    <div class="achievement-item">
+                        <div class="achievement-icon">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <div class="achievement-name">睡眠达人</div>
+                        <div class="achievement-date">2023-06-05</div>
+                    </div>
+                    
+                    <div class="achievement-item">
+                        <div class="achievement-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="achievement-name">护手卫士</div>
+                        <div class="achievement-date">2023-06-10</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 账户与安全 -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-shield-alt"></i>
+                        账户与安全
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-lock"></i>
+                            修改密码
+                        </div>
+                        <div class="item-value">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-mobile-alt"></i>
+                            绑定手机
+                        </div>
+                        <div class="item-value">
+                            已绑定
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-fingerprint"></i>
+                            生物识别
+                        </div>
+                        <div class="item-value">
+                            <div class="toggle-switch active"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 通知设置 -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-bell"></i>
+                        通知设置
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-exclamation-circle"></i>
+                            碰撞提醒
+                        </div>
+                        <div class="item-value">
+                            <div class="toggle-switch active"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-battery-quarter"></i>
+                            电量提醒
+                        </div>
+                        <div class="item-value">
+                            <div class="toggle-switch active"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-moon"></i>
+                            睡眠报告
+                        </div>
+                        <div class="item-value">
+                            <div class="toggle-switch active"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-bullhorn"></i>
+                            活动通知
+                        </div>
+                        <div class="item-value">
+                            <div class="toggle-switch"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 其他设置 -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-cog"></i>
+                        其他设置
+                    </div>
+                </div>
+                
+                <div class="profile-section">
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-language"></i>
+                            语言
+                        </div>
+                        <div class="item-value">
+                            简体中文
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-question-circle"></i>
+                            帮助与反馈
+                        </div>
+                        <div class="item-value">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-item">
+                        <div class="item-label">
+                            <i class="fas fa-info-circle"></i>
+                            关于我们
+                        </div>
+                        <div class="item-value">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="logout-button">
+                    <i class="fas fa-sign-out-alt"></i>
+                    退出登录
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="nav-text">首页</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="nav-text">数据</div>
+            </div>
+            
+            <div class="nav-item">
+                <div class="nav-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="nav-text">提醒</div>
+            </div>
+            
+            <div class="nav-item active">
+                <div class="nav-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
